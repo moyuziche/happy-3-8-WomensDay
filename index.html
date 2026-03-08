@@ -5,28 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>三八妇女节快乐 - 献给最美的妈妈</title>
 <style>
-    /* === 网页基础设定 === */
+    /* === 基础设定与全局滚动 === */
+    html {
+        scroll-behavior: smooth; /* 平滑滚动效果 */
+    }
     body {
-        margin: 0;
-        padding: 0;
-        height: 100vh;
-        width: 100vw;
-        overflow: hidden; /* 防止出现滚动条 */
-        font-family: '楷体', 'STKaiti', serif; /* 使用楷体更显温情 */
-        /* 温暖康乃馨粉色渐变背景 */
+        margin: 0; padding: 0;
+        font-family: '楷体', 'STKaiti', serif;
         background: linear-gradient(135deg, #fff0f5 0%, #ffd1dc 100%);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: relative;
+        background-attachment: fixed; /* 背景固定，不随内容滚动 */
+        color: #555;
     }
 
-    /* === 背景装饰：漂浮的柔光花瓣 === */
+    /* === 飘落的康乃馨花瓣 === */
     .petals {
-        position: absolute;
+        position: fixed; /* 改为fixed，让花瓣始终在屏幕前 */
         top: 0; left: 0; right: 0; bottom: 0;
-        pointer-events: none;
-        z-index: 1;
+        pointer-events: none; z-index: 1;
         background-image: 
             radial-gradient(circle at 20% 30%, rgba(255, 182, 193, 0.4) 10px, transparent 40px),
             radial-gradient(circle at 80% 20%, rgba(255, 192, 203, 0.5) 15px, transparent 50px),
@@ -34,121 +29,128 @@
             radial-gradient(circle at 85% 90%, rgba(255, 182, 193, 0.4) 12px, transparent 45px);
         animation: float-petals 15s ease-in-out infinite alternate;
     }
-    @keyframes float-petals {
-        0% { transform: translateY(0px) rotate(0deg); }
-        100% { transform: translateY(-20px) rotate(5deg); }
-    }
+    @keyframes float-petals { 0% { transform: translateY(0px) rotate(0deg); } 100% { transform: translateY(-30px) rotate(5deg); } }
 
-    /* === 中央寄语区 === */
-    .message-box {
-        position: relative;
-        z-index: 10;
-        background: rgba(255, 255, 255, 0.85);
-        padding: 40px 50px;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(255, 182, 193, 0.3);
-        text-align: center;
-        max-width: 80%;
-        border: 2px solid rgba(255, 192, 203, 0.5);
-        backdrop-filter: blur(5px);
-        animation: fade-in-up 2s ease-out forwards;
-    }
-    @keyframes fade-in-up {
-        0% { opacity: 0; transform: translateY(30px); }
-        100% { opacity: 1; transform: translateY(0); }
-    }
-
-    .message-box h1 {
-        color: #d81b60; /* 深粉红色 */
-        margin: 0 0 20px 0;
-        font-size: 32px;
-        letter-spacing: 2px;
-    }
-    .message-box p {
-        color: #555;
-        font-size: 22px;
-        line-height: 1.8;
-        margin: 0;
-    }
-
-    /* === 音乐播放按钮 === */
+    /* === 音乐按钮 === */
     .music-btn {
-        position: fixed;
-        top: 25px;
-        right: 25px;
-        width: 50px;
-        height: 50px;
-        background-color: rgba(255, 255, 255, 0.6);
-        border: 2px solid #ffb6c1;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 24px;
-        cursor: pointer;
-        z-index: 100;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        position: fixed; top: 25px; right: 25px; width: 45px; height: 45px;
+        background-color: rgba(255, 255, 255, 0.6); border: 2px solid #ffb6c1; border-radius: 50%;
+        display: flex; justify-content: center; align-items: center; font-size: 20px;
+        cursor: pointer; z-index: 100; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    .music-btn:hover {
-        background-color: #ffb6c1;
-        transform: scale(1.1);
-    }
-    .music-btn.playing {
-        background-color: #ff69b4;
-        color: white;
-        box-shadow: 0 0 15px rgba(255, 105, 180, 0.6);
-        animation: spin 4s linear infinite;
-    }
+    .music-btn.playing { background-color: #ff69b4; color: white; box-shadow: 0 0 15px rgba(255, 105, 180, 0.6); animation: spin 4s linear infinite; }
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    /* === 拍立得照片墙样式 === */
-    .polaroid-container {
-        position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        z-index: 5; /* 在背景之上，寄语之下 */
-        pointer-events: none; /* 让容器不阻挡点击事件 */
+    /* === 分屏容器设计 === */
+    .section {
+        min-height: 100vh; /* 每屏至少占满一个屏幕高度 */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 60px 20px;
+        box-sizing: border-box;
+        position: relative;
+        z-index: 10;
     }
 
+    /* === 玻璃质感文字卡片 === */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        padding: 40px;
+        border-radius: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 0 10px 30px rgba(216, 27, 96, 0.1);
+        text-align: center;
+        max-width: 800px;
+        margin-bottom: 40px;
+    }
+    .glass-card h1 { color: #d81b60; font-size: 36px; margin-top: 0; letter-spacing: 2px; }
+    .glass-card h2 { color: #e91e63; font-size: 28px; margin-top: 0; }
+    .glass-card p { font-size: 20px; line-height: 2; margin-bottom: 0; }
+
+    /* 下滑提示小箭头 */
+    .scroll-down {
+        position: absolute; bottom: 30px; font-size: 24px; color: #d81b60;
+        animation: bounce 2s infinite; font-weight: bold;
+    }
+    @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-15px); } 60% { transform: translateY(-7px); } }
+
+    /* === 照片网格布局 (用于各个章节) === */
+    .photo-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 30px;
+        max-width: 1000px;
+    }
+
+    /* 拍立得样式卡片 */
     .polaroid {
-        position: absolute;
         background: white;
-        padding: 10px 10px 25px 10px; /* 拍立得经典的下宽边 */
-        box-shadow: 2px 5px 15px rgba(0,0,0,0.15);
-        pointer-events: auto; /* 恢复照片本身的交互 */
-        cursor: pointer;
-        transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-        /* 初始状态隐藏，通过 JS 触发出现动画 */
-        opacity: 0;
-        transform: scale(0.5);
+        padding: 10px 10px 25px 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer; /* 提示可点击 */
+    }
+    .polaroid img {
+        width: 250px; /* 默认宽度 */
+        height: 250px;
+        object-fit: cover; /* 保证图片不变形 */
+        display: block;
+    }
+    /* 鼠标悬停时的微动效果 */
+    .polaroid:hover {
+        transform: scale(1.05) translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
     
-    .polaroid img {
-        width: 150px; /* 设定统一的照片宽度 */
-        height: auto;
-        display: block;
-        /* 防止图片被拖拽 */
-        -webkit-user-drag: none; 
+    /* 让照片有一点随机的倾斜，显得更自然 */
+    .tilt-left { transform: rotate(-3deg); }
+    .tilt-right { transform: rotate(4deg); }
+    .tilt-left:hover { transform: scale(1.05) rotate(-3deg); }
+    .tilt-right:hover { transform: scale(1.05) rotate(4deg); }
+
+    /* === 照片放大灯箱 (Lightbox) === */
+    .lightbox {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: rgba(0, 0, 0, 0.85); /* 黑色半透明背景 */
+        z-index: 1000;
+        display: flex; justify-content: center; align-items: center;
+        opacity: 0; pointer-events: none; /* 默认隐藏 */
+        transition: opacity 0.3s ease;
+    }
+    .lightbox.active {
+        opacity: 1; pointer-events: auto; /* 激活时显示并允许点击 */
+    }
+    .lightbox img {
+        max-width: 90%; max-height: 90%;
+        border: 10px solid white; border-radius: 5px;
+        box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        transform: scale(0.8); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .lightbox.active img {
+        transform: scale(1); /* 弹出时有放大效果 */
+    }
+    .close-btn {
+        position: absolute; top: 20px; right: 30px; color: white;
+        font-size: 40px; cursor: pointer; font-family: sans-serif;
     }
 
-    /* 悬停放大并浮现到最顶层 */
-    .polaroid:hover {
-        transform: scale(1.5) rotate(0deg) !important; /* 强制放大并摆正 */
-        z-index: 50; /* 悬停时提到最上层 */
-        box-shadow: 5px 15px 30px rgba(0,0,0,0.3);
-    }
-    
-    /* 手机端适配：缩小字体和相片基础尺寸 */
+    /* 手机端适配 */
     @media (max-width: 768px) {
-        .message-box { padding: 20px; }
-        .message-box h1 { font-size: 24px; }
-        .message-box p { font-size: 18px; }
-        .polaroid img { width: 100px; }
+        .glass-card { padding: 25px; margin: 15px; }
+        .glass-card h1 { font-size: 26px; }
+        .glass-card h2 { font-size: 22px; }
+        .glass-card p { font-size: 16px; }
+        .polaroid img { width: 140px; height: 140px; }
+        .photo-grid { gap: 15px; }
     }
 </style>
 </head>
 <body>
-<!-- 背景光晕 -->
+<!-- 背景花瓣 -->
 <div class="petals"></div>
 
 <!-- 音乐播放器 -->
@@ -157,29 +159,84 @@
 </audio>
 <div id="musicToggle" class="music-btn" title="播放/暂停音乐">🔇</div>
 
-<!-- 中央寄语 -->
-<div class="message-box">
-    <h1>三八妇女节快乐！</h1>
-    <p>时光荏苒，岁月静好。<br>谢谢您一直以来的包容与爱，<br>祝世界上最美丽的妈妈节日快乐！</p>
+<!-- 放大查看照片的弹窗 (隐藏状态) -->
+<div class="lightbox" id="lightbox">
+    <span class="close-btn" id="closeBtn">×</span>
+    <img id="lightboxImg" src="" alt="放大照片">
 </div>
 
-<!-- 存放拍立得相片的容器 -->
-<div class="polaroid-container" id="photoWall">
-    <!-- 每张照片会在 JS 中被随机摆放 -->
-    <div class="polaroid"><img src="399de03069df729f.jpg" alt="妈妈和孩子拥抱"></div>
-    <div class="polaroid"><img src="IMG_20160212_115520.jpg" alt="护士合影"></div>
-    <div class="polaroid"><img src="2015年春节摄影microMsg.1424489270003.jpg" alt="春节合影"></div>
-    <div class="polaroid"><img src="DSC00075.JPG" alt="生活照"></div>
-    <div class="polaroid"><img src="IMG_20150211_085608.jpg" alt="喂鸽子"></div>
-    <div class="polaroid"><img src="IMG_20150428_180127.jpg" alt="一起看书"></div>
-    <div class="polaroid"><img src="IMG20150913085234.jpg" alt="自拍"></div>
-    <div class="polaroid"><img src="microMsg.1414297649490.jpg" alt="沙滩生活照"></div>
-    <div class="polaroid"><img src="microMsg.1423973894349.jpg" alt="三人合影"></div>
-    <div class="polaroid"><img src="microMsg.1437566185753.jpg" alt="餐厅吃饭"></div>
+<!-- === 第一屏：首页寄语 === -->
+<div class="section" id="sec1">
+    <div class="glass-card">
+        <h1>三八妇女节快乐</h1>
+        <p>时光荏苒，岁月静好。<br>谢谢您一直以来的包容与爱，<br>祝世界上最美丽的妈妈节日快乐！</p>
+    </div>
+    <!-- 首屏放一张最有代表性的照片 -->
+    <div class="polaroid tilt-right" onclick="openLightbox('399de03069df729f.jpg')">
+        <img src="399de03069df729f.jpg" alt="最温暖的拥抱">
+    </div>
+    <div class="scroll-down">↓ 向下滑动翻阅相册 ↓</div>
+</div>
+
+<!-- === 第二屏：时光与陪伴 === -->
+<div class="section" id="sec2">
+    <div class="glass-card">
+        <h2>点滴陪伴，是最长情的告白</h2>
+        <p>从小到大，是您牵着我的手看世界。<br>那些平凡日子里的每一帧画面，<br>都是我心里最珍贵的宝藏。</p>
+    </div>
+    <div class="photo-grid">
+        <div class="polaroid tilt-left" onclick="openLightbox('IMG_20150428_180127.jpg')">
+            <img src="IMG_20150428_180127.jpg" alt="一起看书">
+        </div>
+        <div class="polaroid tilt-right" onclick="openLightbox('IMG_20150211_085608.jpg')">
+            <img src="IMG_20150211_085608.jpg" alt="喂鸽子">
+        </div>
+        <div class="polaroid tilt-left" onclick="openLightbox('microMsg.1437566185753.jpg')">
+            <img src="microMsg.1437566185753.jpg" alt="餐厅吃饭">
+        </div>
+    </div>
+</div>
+
+<!-- === 第三屏：致敬您的付出 === -->
+<div class="section" id="sec3">
+    <div class="glass-card">
+        <h2>无私奉献，您是超人也是女神</h2>
+        <p>您在工作岗位上闪闪发光，<br>在家庭里为我们遮风挡雨。<br>您把青春给了我们，今天请让我们把掌声献给您。</p>
+    </div>
+    <div class="photo-grid">
+        <div class="polaroid tilt-right" onclick="openLightbox('IMG_20160212_115520.jpg')">
+            <img src="IMG_20160212_115520.jpg" alt="护士合影">
+        </div>
+        <div class="polaroid tilt-left" onclick="openLightbox('microMsg.1423973894349.jpg')">
+            <img src="microMsg.1423973894349.jpg" alt="三人合影">
+        </div>
+        <div class="polaroid tilt-right" onclick="openLightbox('2015年春节摄影microMsg.1424489270003.jpg')">
+            <img src="2015年春节摄影microMsg.1424489270003.jpg" alt="春节合影">
+        </div>
+    </div>
+</div>
+
+<!-- === 第四屏：愿您永远美丽 === -->
+<div class="section" id="sec4">
+    <div class="glass-card">
+        <h2>岁月从不败美人</h2>
+        <p>无论多少岁，您永远是我们心中那个爱笑的少女。<br>愿您以后的日子，<br>多喜乐，长安宁，眼里有光，笑里坦荡！</p>
+    </div>
+    <div class="photo-grid">
+        <div class="polaroid tilt-left" onclick="openLightbox('IMG20150913085234.jpg')">
+            <img src="IMG20150913085234.jpg" alt="自拍">
+        </div>
+        <div class="polaroid tilt-right" onclick="openLightbox('microMsg.1414297649490.jpg')">
+            <img src="microMsg.1414297649490.jpg" alt="沙滩生活照">
+        </div>
+        <div class="polaroid tilt-left" onclick="openLightbox('DSC00075.JPG')">
+            <img src="DSC00075.JPG" alt="生活照">
+        </div>
+    </div>
 </div>
 
 <script>
-    // === 音乐播放逻辑 ===
+    // === 1. 音乐播放逻辑 ===
     const musicToggle = document.getElementById('musicToggle');
     const bgMusic = document.getElementById('bgMusic');
     let isPlaying = false;
@@ -197,68 +254,36 @@
                     musicToggle.innerHTML = '🎵';
                 }).catch(error => {
                     console.log("Play failed: ", error);
-                    alert("请点击页面任意空白处后再播放音乐。");
+                    alert("请先点击一下页面再播放音乐哦。");
                 });
             }
         }
         isPlaying = !isPlaying;
     });
 
-    // === 照片墙随机散落逻辑 ===
-    window.onload = () => {
-        const polaroids = document.querySelectorAll('.polaroid');
-        const container = document.getElementById('photoWall');
-        
-        // 获取屏幕的宽高，用于计算随机位置
-        const screenWidth = window.innerWidth;
-        const screenHeight = window.innerHeight;
+    // === 2. 照片灯箱 (放大查看) 逻辑 ===
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const closeBtn = document.getElementById('closeBtn');
 
-        polaroids.forEach((polaroid, index) => {
-            // 生成随机的旋转角度 (-25度 到 25度)
-            const randomRotation = Math.floor(Math.random() * 50) - 25;
-            
-            // 生成随机的位置
-            // 限制一下范围，避免照片完全飞出屏幕外
-            // 注意：为了不挡住中间的文字，这里采用了一个简单的逻辑：
-            // 大致将屏幕分成四周边缘区域来放置照片
-            let randomX, randomY;
-            
-            // 简单的随机分配到四个象限边缘附近
-            const quadrant = index % 4; 
-            const margin = 50; // 离边缘的距离
-            const photoSize = 150; // 预估照片宽度
+    // 打开灯箱的函数 (绑定在HTML的onclick里)
+    function openLightbox(imageSrc) {
+        lightboxImg.src = imageSrc;
+        lightbox.classList.add('active');
+    }
 
-            if (quadrant === 0) { // 左上
-                randomX = Math.random() * (screenWidth * 0.3) + margin;
-                randomY = Math.random() * (screenHeight * 0.4) + margin;
-            } else if (quadrant === 1) { // 右上
-                randomX = screenWidth - (Math.random() * (screenWidth * 0.3) + margin + photoSize);
-                randomY = Math.random() * (screenHeight * 0.4) + margin;
-            } else if (quadrant === 2) { // 左下
-                randomX = Math.random() * (screenWidth * 0.3) + margin;
-                randomY = screenHeight - (Math.random() * (screenHeight * 0.4) + margin + photoSize);
-            } else { // 右下
-                randomX = screenWidth - (Math.random() * (screenWidth * 0.3) + margin + photoSize);
-                randomY = screenHeight - (Math.random() * (screenHeight * 0.4) + margin + photoSize);
-            }
+    // 点击关闭按钮关闭灯箱
+    closeBtn.addEventListener('click', () => {
+        lightbox.classList.remove('active');
+    });
 
-            // 应用位置和旋转，并加上错落的动画延迟
-            setTimeout(() => {
-                polaroid.style.left = `${randomX}px`;
-                polaroid.style.top = `${randomY}px`;
-                polaroid.style.opacity = 1;
-                polaroid.style.transform = `scale(1) rotate(${randomRotation}deg)`;
-                // 记住原始的 transform 状态，以便 hover 结束后恢复
-                polaroid.setAttribute('data-transform', `scale(1) rotate(${randomRotation}deg)`);
-            }, index * 200); // 每张照片隔 0.2 秒飞出
-
-            // 鼠标移出时恢复原本的随机旋转角度
-            polaroid.addEventListener('mouseleave', () => {
-                polaroid.style.transform = polaroid.getAttribute('data-transform');
-                polaroid.style.zIndex = ''; // 恢复默认层级
-            });
-        });
-    };
+    // 点击背景黑色区域也能关闭灯箱
+    lightbox.addEventListener('click', (e) => {
+        // 确保点击的不是图片本身
+        if (e.target !== lightboxImg) {
+            lightbox.classList.remove('active');
+        }
+    });
 </script>
 </body>
 </html>
