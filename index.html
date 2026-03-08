@@ -5,153 +5,195 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>三八妇女节快乐 - 献给最美的妈妈</title>
 <style>
-    /* === 基础设定与全局滚动 === */
-    html {
-        scroll-behavior: smooth; /* 平滑滚动效果 */
-    }
+    /* === 基础设定 === */
+    html { scroll-behavior: smooth; }
     body {
         margin: 0; padding: 0;
         font-family: '楷体', 'STKaiti', serif;
         background: linear-gradient(135deg, #fff0f5 0%, #ffd1dc 100%);
-        background-attachment: fixed; /* 背景固定，不随内容滚动 */
+        background-attachment: fixed; 
         color: #555;
+        overflow-x: hidden;
     }
 
-    /* === 飘落的康乃馨花瓣 === */
-    .petals {
-        position: fixed; /* 改为fixed，让花瓣始终在屏幕前 */
-        top: 0; left: 0; right: 0; bottom: 0;
+    /* === 🔥 欢迎开启遮罩层 (完美解决音乐自动播放) 🔥 === */
+    #startOverlay {
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: linear-gradient(135deg, #ffc0cb 0%, #ffb6c1 100%);
+        z-index: 9999; display: flex; flex-direction: column;
+        justify-content: center; align-items: center;
+        transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .open-btn {
+        background: #d81b60; color: white; padding: 15px 40px;
+        font-size: 24px; font-family: '楷体', 'STKaiti', serif;
+        border: none; border-radius: 30px; cursor: pointer;
+        box-shadow: 0 10px 25px rgba(216, 27, 96, 0.4);
+        animation: pulse-btn 1.5s infinite; transition: all 0.3s;
+    }
+    .open-btn:hover { transform: scale(1.05); background: #e91e63; }
+    @keyframes pulse-btn {
+        0% { box-shadow: 0 0 0 0 rgba(216, 27, 96, 0.7); }
+        70% { box-shadow: 0 0 0 20px rgba(216, 27, 96, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(216, 27, 96, 0); }
+    }
+    .overlay-title { color: white; font-size: 32px; margin-bottom: 30px; letter-spacing: 2px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
+
+    /* === 飘落的花瓣与爱心 === */
+    .bg-effects {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
         pointer-events: none; z-index: 1;
         background-image: 
-            radial-gradient(circle at 20% 30%, rgba(255, 182, 193, 0.4) 10px, transparent 40px),
-            radial-gradient(circle at 80% 20%, rgba(255, 192, 203, 0.5) 15px, transparent 50px),
-            radial-gradient(circle at 10% 80%, rgba(255, 105, 180, 0.3) 20px, transparent 60px),
-            radial-gradient(circle at 85% 90%, rgba(255, 182, 193, 0.4) 12px, transparent 45px);
-        animation: float-petals 15s ease-in-out infinite alternate;
+            radial-gradient(circle at 20% 30%, rgba(255, 182, 193, 0.5) 8px, transparent 30px),
+            radial-gradient(circle at 80% 20%, rgba(255, 192, 203, 0.6) 12px, transparent 45px),
+            radial-gradient(circle at 10% 80%, rgba(255, 105, 180, 0.4) 15px, transparent 55px),
+            radial-gradient(circle at 85% 90%, rgba(255, 182, 193, 0.5) 10px, transparent 40px);
+        animation: float-petals 12s ease-in-out infinite alternate;
     }
-    @keyframes float-petals { 0% { transform: translateY(0px) rotate(0deg); } 100% { transform: translateY(-30px) rotate(5deg); } }
+    .bg-effects::before, .bg-effects::after {
+        content: '❤'; position: absolute; font-size: 24px; color: rgba(255, 105, 180, 0.3);
+        animation: float-hearts 15s linear infinite;
+    }
+    .bg-effects::before { left: 15%; top: -10%; animation-delay: 0s; }
+    .bg-effects::after { left: 75%; top: -10%; font-size: 32px; animation-delay: 7s; }
+
+    @keyframes float-petals { 0% { transform: translateY(0px); } 100% { transform: translateY(-40px); } }
+    @keyframes float-hearts { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
 
     /* === 音乐按钮 === */
     .music-btn {
         position: fixed; top: 25px; right: 25px; width: 45px; height: 45px;
-        background-color: rgba(255, 255, 255, 0.6); border: 2px solid #ffb6c1; border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.8); border: 2px solid #ffb6c1; border-radius: 50%;
         display: flex; justify-content: center; align-items: center; font-size: 20px;
         cursor: pointer; z-index: 100; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    .music-btn.playing { background-color: #ff69b4; color: white; box-shadow: 0 0 15px rgba(255, 105, 180, 0.6); animation: spin 4s linear infinite; }
+    .music-btn.playing { 
+        background-color: #ff69b4; color: white; 
+        box-shadow: 0 0 15px rgba(255, 105, 180, 0.6); 
+        animation: spin 4s linear infinite; 
+    }
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    /* === 分屏容器设计 === */
+    /* === 分屏容器与滚动特效 === */
     .section {
-        min-height: 100vh; /* 每屏至少占满一个屏幕高度 */
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 60px 20px;
-        box-sizing: border-box;
-        position: relative;
-        z-index: 10;
+        min-height: 100vh; display: flex; flex-direction: column;
+        justify-content: center; align-items: center; padding: 80px 20px;
+        box-sizing: border-box; position: relative; z-index: 10;
     }
+    .reveal {
+        opacity: 0; transform: translateY(40px);
+        transition: all 0.8s ease-out;
+    }
+    .reveal.active { opacity: 1; transform: translateY(0); }
 
     /* === 玻璃质感文字卡片 === */
     .glass-card {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
-        padding: 40px;
-        border-radius: 20px;
-        border: 2px solid rgba(255, 255, 255, 0.8);
-        box-shadow: 0 10px 30px rgba(216, 27, 96, 0.1);
-        text-align: center;
-        max-width: 800px;
-        margin-bottom: 40px;
+        background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(12px);
+        padding: 40px 50px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.9);
+        box-shadow: 0 15px 35px rgba(216, 27, 96, 0.1); text-align: center;
+        max-width: 800px; margin-bottom: 50px;
     }
-    .glass-card h1 { color: #d81b60; font-size: 36px; margin-top: 0; letter-spacing: 2px; }
+    .glass-card h1 { color: #d81b60; font-size: 38px; margin-top: 0; letter-spacing: 3px; }
     .glass-card h2 { color: #e91e63; font-size: 28px; margin-top: 0; }
-    .glass-card p { font-size: 20px; line-height: 2; margin-bottom: 0; }
+    .glass-card p { font-size: 22px; line-height: 2; margin-bottom: 0; color: #444; font-weight: bold;}
 
-    /* 下滑提示小箭头 */
     .scroll-down {
-        position: absolute; bottom: 30px; font-size: 24px; color: #d81b60;
-        animation: bounce 2s infinite; font-weight: bold;
+        position: absolute; bottom: 30px; font-size: 18px; color: #d81b60;
+        animation: bounce 2s infinite; font-weight: bold; letter-spacing: 2px;
     }
-    @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-15px); } 60% { transform: translateY(-7px); } }
+    @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
 
-    /* === 照片网格布局 (用于各个章节) === */
+    /* === 照片网格与拍立得样式 === */
     .photo-grid {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 30px;
-        max-width: 1000px;
+        display: flex; flex-wrap: wrap; justify-content: center;
+        gap: 30px; max-width: 1100px;
     }
-
-    /* 拍立得样式卡片 */
     .polaroid {
-        background: white;
-        padding: 10px 10px 25px 10px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        cursor: pointer; /* 提示可点击 */
+        background: #fff; padding: 12px 12px 35px 12px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease; cursor: pointer;
+        position: relative;
+    }
+    .polaroid::before {
+        content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
+        width: 15px; height: 15px; background: rgba(200,200,200,0.8);
+        border-radius: 50%; box-shadow: inset -2px -2px 5px rgba(0,0,0,0.2), 1px 1px 2px rgba(0,0,0,0.2);
     }
     .polaroid img {
-        width: 250px; /* 默认宽度 */
-        height: 250px;
-        object-fit: cover; /* 保证图片不变形 */
-        display: block;
+        width: 240px; height: 240px; object-fit: cover; display: block;
     }
-    /* 鼠标悬停时的微动效果 */
-    .polaroid:hover {
-        transform: scale(1.05) translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    }
+    .polaroid:hover { transform: scale(1.05) translateY(-5px) !important; box-shadow: 0 15px 30px rgba(0,0,0,0.2); z-index: 20; }
     
-    /* 让照片有一点随机的倾斜，显得更自然 */
     .tilt-left { transform: rotate(-3deg); }
     .tilt-right { transform: rotate(4deg); }
-    .tilt-left:hover { transform: scale(1.05) rotate(-3deg); }
-    .tilt-right:hover { transform: scale(1.05) rotate(4deg); }
+    
+    /* === 视频容器框设计 === */
+    .video-wrapper {
+        background: white; padding: 15px 15px 40px 15px; 
+        border-radius: 5px; box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        max-width: 800px; width: 90%; transform: rotate(-1deg);
+        position: relative;
+    }
+    .video-wrapper video {
+        width: 100%; border-radius: 4px; display: block; outline: none; background: #000;
+    }
+    .video-wrapper::after {
+        content: '🎬 我们的心里话'; position: absolute; bottom: 10px; left: 0; right: 0;
+        text-align: center; color: #d81b60; font-size: 18px; font-weight: bold;
+    }
 
-    /* === 照片放大灯箱 (Lightbox) === */
+    /* === 🔥 提速后的高清照片灯箱 (极速弹出) 🔥 === */
     .lightbox {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background-color: rgba(0, 0, 0, 0.85); /* 黑色半透明背景 */
-        z-index: 1000;
+        background-color: rgba(0, 0, 0, 0.9); z-index: 10000;
         display: flex; justify-content: center; align-items: center;
-        opacity: 0; pointer-events: none; /* 默认隐藏 */
-        transition: opacity 0.3s ease;
+        opacity: 0; pointer-events: none; 
+        transition: opacity 0.15s ease; /* 弹窗背景极速渐显 */
     }
-    .lightbox.active {
-        opacity: 1; pointer-events: auto; /* 激活时显示并允许点击 */
+    .lightbox.active { opacity: 1; pointer-events: auto; }
+    
+    .lightbox-img-wrapper {
+        position: relative; max-width: 90vw; max-height: 85vh; 
+        display: flex; justify-content: center; align-items: center;
     }
     .lightbox img {
-        max-width: 90%; max-height: 90%;
-        border: 10px solid white; border-radius: 5px;
-        box-shadow: 0 0 30px rgba(0,0,0,0.5);
-        transform: scale(0.8); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        max-width: 100%; max-height: 85vh; object-fit: contain; 
+        border: 10px solid white; border-radius: 4px;
+        box-shadow: 0 0 40px rgba(0,0,0,0.8);
+        transform: scale(0.95); /* 取消了原来的小尺寸，直接从0.95弹到1，速度极快 */
+        transition: transform 0.15s ease-out; /* 极速弹出动画 */
     }
-    .lightbox.active img {
-        transform: scale(1); /* 弹出时有放大效果 */
-    }
+    .lightbox.active img { transform: scale(1); }
+    
     .close-btn {
-        position: absolute; top: 20px; right: 30px; color: white;
-        font-size: 40px; cursor: pointer; font-family: sans-serif;
+        position: absolute; top: 20px; right: 30px; color: rgba(255,255,255,0.7);
+        font-size: 50px; cursor: pointer; transition: color 0.2s ease;
     }
+    .close-btn:hover { color: white; }
 
     /* 手机端适配 */
     @media (max-width: 768px) {
-        .glass-card { padding: 25px; margin: 15px; }
+        .section { padding: 50px 15px; }
+        .glass-card { padding: 30px 20px; margin-bottom: 30px; }
         .glass-card h1 { font-size: 26px; }
         .glass-card h2 { font-size: 22px; }
         .glass-card p { font-size: 16px; }
         .polaroid img { width: 140px; height: 140px; }
         .photo-grid { gap: 15px; }
+        .lightbox img { border-width: 6px; }
     }
 </style>
 </head>
 <body>
-<!-- 背景花瓣 -->
-<div class="petals"></div>
+
+<!-- === 欢迎遮罩层 (解决音频自动播放拦截) === -->
+<div id="startOverlay">
+    <div class="overlay-title">一份特别的礼物，等待查收</div>
+    <button class="open-btn" id="openBtn">点击开启</button>
+</div>
+
+<!-- 背景特效层 -->
+<div class="bg-effects"></div>
 
 <!-- 音乐播放器 -->
 <audio id="bgMusic" loop>
@@ -159,39 +201,44 @@
 </audio>
 <div id="musicToggle" class="music-btn" title="播放/暂停音乐">🔇</div>
 
-<!-- 放大查看照片的弹窗 (隐藏状态) -->
+<!-- 极速高清灯箱 -->
 <div class="lightbox" id="lightbox">
     <span class="close-btn" id="closeBtn">×</span>
-    <img id="lightboxImg" src="" alt="放大照片">
+    <div class="lightbox-img-wrapper">
+        <img id="lightboxImg" src="" alt="放大照片">
+    </div>
 </div>
 
 <!-- === 第一屏：首页寄语 === -->
 <div class="section" id="sec1">
-    <div class="glass-card">
-        <h1>三八妇女节快乐</h1>
+    <div class="glass-card reveal">
+        <h1>三八妇女节快乐！</h1>
         <p>时光荏苒，岁月静好。<br>谢谢您一直以来的包容与爱，<br>祝世界上最美丽的妈妈节日快乐！</p>
     </div>
-    <!-- 首屏放一张最有代表性的照片 -->
-    <div class="polaroid tilt-right" onclick="openLightbox('399de03069df729f.jpg')">
+    <!-- 首屏主图 -->
+    <div class="polaroid tilt-right reveal" style="transition-delay: 0.2s;" onclick="openLightbox('399de03069df729f.jpg')">
         <img src="399de03069df729f.jpg" alt="最温暖的拥抱">
     </div>
-    <div class="scroll-down">↓ 向下滑动翻阅相册 ↓</div>
+    <div class="scroll-down">↓ 滑动翻阅相册 ↓</div>
 </div>
 
 <!-- === 第二屏：时光与陪伴 === -->
 <div class="section" id="sec2">
-    <div class="glass-card">
+    <div class="glass-card reveal">
         <h2>点滴陪伴，是最长情的告白</h2>
-        <p>从小到大，是您牵着我的手看世界。<br>那些平凡日子里的每一帧画面，<br>都是我心里最珍贵的宝藏。</p>
+        <p>从小到大，是您牵着我们的手看世界。<br>平凡日子里的每一帧画面，都是我们心里最珍贵的宝藏。</p>
     </div>
     <div class="photo-grid">
-        <div class="polaroid tilt-left" onclick="openLightbox('IMG_20150428_180127.jpg')">
+        <div class="polaroid tilt-left reveal" onclick="openLightbox('IMG_20150428_180127.jpg')">
             <img src="IMG_20150428_180127.jpg" alt="一起看书">
         </div>
-        <div class="polaroid tilt-right" onclick="openLightbox('IMG_20150211_085608.jpg')">
+        <div class="polaroid tilt-right reveal" style="transition-delay: 0.1s;" onclick="openLightbox('IMG_20150211_085608.jpg')">
             <img src="IMG_20150211_085608.jpg" alt="喂鸽子">
         </div>
-        <div class="polaroid tilt-left" onclick="openLightbox('microMsg.1437566185753.jpg')">
+        <div class="polaroid tilt-left reveal" style="transition-delay: 0.2s;" onclick="openLightbox('IMG_1773.JPG')">
+            <img src="IMG_1773.JPG" alt="陪伴">
+        </div>
+        <div class="polaroid tilt-right reveal" style="transition-delay: 0.3s;" onclick="openLightbox('microMsg.1437566185753.jpg')">
             <img src="microMsg.1437566185753.jpg" alt="餐厅吃饭">
         </div>
     </div>
@@ -199,91 +246,149 @@
 
 <!-- === 第三屏：致敬您的付出 === -->
 <div class="section" id="sec3">
-    <div class="glass-card">
+    <div class="glass-card reveal">
         <h2>无私奉献，您是超人也是女神</h2>
-        <p>您在工作岗位上闪闪发光，<br>在家庭里为我们遮风挡雨。<br>您把青春给了我们，今天请让我们把掌声献给您。</p>
+        <p>您在工作岗位上闪闪发光，在家庭里为我们遮风挡雨。<br>您把青春给了我们，今天请让我们把掌声献给您。</p>
     </div>
     <div class="photo-grid">
-        <div class="polaroid tilt-right" onclick="openLightbox('IMG_20160212_115520.jpg')">
+        <div class="polaroid tilt-right reveal" onclick="openLightbox('IMG_20160212_115520.jpg')">
             <img src="IMG_20160212_115520.jpg" alt="护士合影">
         </div>
-        <div class="polaroid tilt-left" onclick="openLightbox('microMsg.1423973894349.jpg')">
+        <div class="polaroid tilt-left reveal" style="transition-delay: 0.1s;" onclick="openLightbox('microMsg.1423973894349.jpg')">
             <img src="microMsg.1423973894349.jpg" alt="三人合影">
         </div>
-        <div class="polaroid tilt-right" onclick="openLightbox('2015年春节摄影microMsg.1424489270003.jpg')">
+        <div class="polaroid tilt-right reveal" style="transition-delay: 0.2s;" onclick="openLightbox('2015年春节摄影microMsg.1424489270003.jpg')">
             <img src="2015年春节摄影microMsg.1424489270003.jpg" alt="春节合影">
+        </div>
+        <div class="polaroid tilt-left reveal" style="transition-delay: 0.3s;" onclick="openLightbox('IMG_1802.JPG')">
+            <img src="IMG_1802.JPG" alt="合影">
         </div>
     </div>
 </div>
 
 <!-- === 第四屏：愿您永远美丽 === -->
 <div class="section" id="sec4">
-    <div class="glass-card">
+    <div class="glass-card reveal">
         <h2>岁月从不败美人</h2>
-        <p>无论多少岁，您永远是我们心中那个爱笑的少女。<br>愿您以后的日子，<br>多喜乐，长安宁，眼里有光，笑里坦荡！</p>
+        <p>无论多少岁，您永远是我们心中那个爱笑的少女。<br>愿您以后的日子，多喜乐，长安宁，眼里有光，笑里坦荡！</p>
     </div>
     <div class="photo-grid">
-        <div class="polaroid tilt-left" onclick="openLightbox('IMG20150913085234.jpg')">
+        <div class="polaroid tilt-left reveal" onclick="openLightbox('IMG20150913085234.jpg')">
             <img src="IMG20150913085234.jpg" alt="自拍">
         </div>
-        <div class="polaroid tilt-right" onclick="openLightbox('microMsg.1414297649490.jpg')">
+        <div class="polaroid tilt-right reveal" style="transition-delay: 0.1s;" onclick="openLightbox('microMsg.1414297649490.jpg')">
             <img src="microMsg.1414297649490.jpg" alt="沙滩生活照">
         </div>
-        <div class="polaroid tilt-left" onclick="openLightbox('DSC00075.JPG')">
+        <div class="polaroid tilt-left reveal" style="transition-delay: 0.2s;" onclick="openLightbox('DSC00075.JPG')">
             <img src="DSC00075.JPG" alt="生活照">
         </div>
     </div>
 </div>
 
+<!-- === 第五屏：视频彩蛋篇 === -->
+<div class="section" id="sec5">
+    <div class="glass-card reveal">
+        <h2>特别的爱给特别的您</h2>
+        <p>千言万语，化作一句最真挚的祝福：<br>妈妈，我们永远爱您！</p>
+    </div>
+    <!-- 视频播放容器 -->
+    <div class="video-wrapper reveal" style="transition-delay: 0.2s;">
+        <!-- controls允许控制进度音量，preload加载元数据 -->
+        <video src="e1baf6f8cab8a96c43844d8375f4ef26.mp4" controls preload="metadata"></video>
+    </div>
+</div>
+
 <script>
-    // === 1. 音乐播放逻辑 ===
+    // === 1. 欢迎界面与音乐播放联动 ===
+    const overlay = document.getElementById('startOverlay');
+    const openBtn = document.getElementById('openBtn');
     const musicToggle = document.getElementById('musicToggle');
     const bgMusic = document.getElementById('bgMusic');
     let isPlaying = false;
 
+    // 用户点击“点击开启”
+    openBtn.addEventListener('click', () => {
+        // 1. 播放音乐 (浏览器允许用户点击后播放)
+        bgMusic.play().then(() => {
+            isPlaying = true;
+            musicToggle.classList.add('playing');
+            musicToggle.innerHTML = '🎵';
+        }).catch(err => console.log("播放失败", err));
+
+        // 2. 隐藏遮罩层
+        overlay.style.opacity = '0';
+        overlay.style.transform = 'scale(1.1)'; // 放大消散特效
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            // 3. 遮罩消失后，触发首屏元素的入场动画
+            revealOnScroll(); 
+        }, 800);
+    });
+
+    // 右上角音乐按钮的手动控制
     musicToggle.addEventListener('click', () => {
         if (isPlaying) {
             bgMusic.pause();
             musicToggle.classList.remove('playing');
             musicToggle.innerHTML = '🔇';
         } else {
-            let playPromise = bgMusic.play();
-            if (playPromise !== undefined) {
-                playPromise.then(_ => {
-                    musicToggle.classList.add('playing');
-                    musicToggle.innerHTML = '🎵';
-                }).catch(error => {
-                    console.log("Play failed: ", error);
-                    alert("请先点击一下页面再播放音乐哦。");
-                });
-            }
+            bgMusic.play();
+            musicToggle.classList.add('playing');
+            musicToggle.innerHTML = '🎵';
         }
         isPlaying = !isPlaying;
     });
 
-    // === 2. 照片灯箱 (放大查看) 逻辑 ===
+    // 监听视频播放，当视频播放时自动暂停背景音乐
+    const myVideo = document.querySelector('video');
+    myVideo.addEventListener('play', () => {
+        if(isPlaying){
+            bgMusic.pause();
+            musicToggle.classList.remove('playing');
+            musicToggle.innerHTML = '🔇';
+            isPlaying = false;
+        }
+    });
+
+    // === 2. 极速高清灯箱 (Lightbox) 逻辑 ===
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightboxImg');
     const closeBtn = document.getElementById('closeBtn');
 
-    // 打开灯箱的函数 (绑定在HTML的onclick里)
     function openLightbox(imageSrc) {
         lightboxImg.src = imageSrc;
         lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden'; 
     }
 
-    // 点击关闭按钮关闭灯箱
-    closeBtn.addEventListener('click', () => {
+    function closeLightbox() {
         lightbox.classList.remove('active');
+        document.body.style.overflow = ''; 
+        // 缩短清空图片的延迟时间
+        setTimeout(() => { lightboxImg.src = ''; }, 150); 
+    }
+
+    closeBtn.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => {
+        if (e.target !== lightboxImg) { closeLightbox(); }
     });
 
-    // 点击背景黑色区域也能关闭灯箱
-    lightbox.addEventListener('click', (e) => {
-        // 确保点击的不是图片本身
-        if (e.target !== lightboxImg) {
-            lightbox.classList.remove('active');
-        }
-    });
+    // === 3. 滚动浮现动画逻辑 ===
+    function revealOnScroll() {
+        const reveals = document.querySelectorAll('.reveal');
+        const windowHeight = window.innerHeight;
+        const elementVisible = 80; 
+
+        reveals.forEach((reveal) => {
+            const elementTop = reveal.getBoundingClientRect().top;
+            if (elementTop < windowHeight - elementVisible) {
+                reveal.classList.add('active');
+            }
+        });
+    }
+    
+    // 监听滚动
+    window.addEventListener('scroll', revealOnScroll);
 </script>
 </body>
 </html>
