@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>三八妇女节快乐 - 献给最美的妈妈</title>
 <style>
     /* === 基础设定 === */
@@ -14,30 +14,31 @@
         background-attachment: fixed; 
         color: #555;
         overflow-x: hidden;
+        -webkit-tap-highlight-color: transparent; /* 去除安卓点击的默认高亮 */
     }
 
-    /* === 🔥 欢迎开启遮罩层 (完美解决音乐自动播放) 🔥 === */
+    /* === 🔥 欢迎开启遮罩层 🔥 === */
     #startOverlay {
         position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
         background: linear-gradient(135deg, #ffc0cb 0%, #ffb6c1 100%);
         z-index: 9999; display: flex; flex-direction: column;
         justify-content: center; align-items: center;
-        transition: opacity 0.8s ease, transform 0.8s ease;
+        transition: opacity 0.4s ease, transform 0.4s ease; /* 提速消失动画 */
     }
     .open-btn {
         background: #d81b60; color: white; padding: 15px 40px;
         font-size: 24px; font-family: '楷体', 'STKaiti', serif;
         border: none; border-radius: 30px; cursor: pointer;
         box-shadow: 0 10px 25px rgba(216, 27, 96, 0.4);
-        animation: pulse-btn 1.5s infinite; transition: all 0.3s;
+        animation: pulse-btn 1.5s infinite; transition: all 0.2s;
     }
-    .open-btn:hover { transform: scale(1.05); background: #e91e63; }
+    .open-btn:active { transform: scale(0.95); } /* 增加点击反馈 */
     @keyframes pulse-btn {
         0% { box-shadow: 0 0 0 0 rgba(216, 27, 96, 0.7); }
         70% { box-shadow: 0 0 0 20px rgba(216, 27, 96, 0); }
         100% { box-shadow: 0 0 0 0 rgba(216, 27, 96, 0); }
     }
-    .overlay-title { color: white; font-size: 32px; margin-bottom: 30px; letter-spacing: 2px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
+    .overlay-title { color: white; font-size: 30px; margin-bottom: 30px; letter-spacing: 2px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); text-align: center; padding: 0 20px;}
 
     /* === 飘落的花瓣与爱心 === */
     .bg-effects {
@@ -74,31 +75,32 @@
     }
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    /* === 分屏容器与滚动特效 === */
+    /* === 分屏容器与滚动特效 🔥 提速 🔥 === */
     .section {
         min-height: 100vh; display: flex; flex-direction: column;
         justify-content: center; align-items: center; padding: 80px 20px;
         box-sizing: border-box; position: relative; z-index: 10;
     }
+    /* 删除了冗长的延迟，动画时间缩短至0.3秒，瞬间弹出！ */
     .reveal {
-        opacity: 0; transform: translateY(40px);
-        transition: all 0.8s ease-out;
+        opacity: 0; transform: translateY(30px);
+        transition: all 0.3s cubic-bezier(0, 0, 0.2, 1); 
     }
     .reveal.active { opacity: 1; transform: translateY(0); }
 
     /* === 玻璃质感文字卡片 === */
     .glass-card {
         background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(12px);
-        padding: 40px 50px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.9);
+        padding: 30px 40px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.9);
         box-shadow: 0 15px 35px rgba(216, 27, 96, 0.1); text-align: center;
-        max-width: 800px; margin-bottom: 50px;
+        max-width: 800px; margin-bottom: 40px;
     }
-    .glass-card h1 { color: #d81b60; font-size: 38px; margin-top: 0; letter-spacing: 3px; }
-    .glass-card h2 { color: #e91e63; font-size: 28px; margin-top: 0; }
-    .glass-card p { font-size: 22px; line-height: 2; margin-bottom: 0; color: #444; font-weight: bold;}
+    .glass-card h1 { color: #d81b60; font-size: 32px; margin-top: 0; letter-spacing: 2px; }
+    .glass-card h2 { color: #e91e63; font-size: 26px; margin-top: 0; }
+    .glass-card p { font-size: 20px; line-height: 1.8; margin-bottom: 0; color: #444; font-weight: bold;}
 
     .scroll-down {
-        position: absolute; bottom: 30px; font-size: 18px; color: #d81b60;
+        position: absolute; bottom: 20px; font-size: 16px; color: #d81b60;
         animation: bounce 2s infinite; font-weight: bold; letter-spacing: 2px;
     }
     @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
@@ -106,12 +108,12 @@
     /* === 照片网格与拍立得样式 === */
     .photo-grid {
         display: flex; flex-wrap: wrap; justify-content: center;
-        gap: 30px; max-width: 1100px;
+        gap: 25px; max-width: 1100px;
     }
     .polaroid {
-        background: #fff; padding: 12px 12px 35px 12px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease; cursor: pointer;
+        background: #fff; padding: 10px 10px 30px 10px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: pointer;
         position: relative;
     }
     .polaroid::before {
@@ -120,16 +122,16 @@
         border-radius: 50%; box-shadow: inset -2px -2px 5px rgba(0,0,0,0.2), 1px 1px 2px rgba(0,0,0,0.2);
     }
     .polaroid img {
-        width: 240px; height: 240px; object-fit: cover; display: block;
+        width: 220px; height: 220px; object-fit: cover; display: block;
     }
-    .polaroid:hover { transform: scale(1.05) translateY(-5px) !important; box-shadow: 0 15px 30px rgba(0,0,0,0.2); z-index: 20; }
+    .polaroid:active { transform: scale(0.98); } /* 手机端点击反馈 */
     
     .tilt-left { transform: rotate(-3deg); }
     .tilt-right { transform: rotate(4deg); }
     
     /* === 视频容器框设计 === */
     .video-wrapper {
-        background: white; padding: 15px 15px 40px 15px; 
+        background: white; padding: 10px 10px 35px 10px; 
         border-radius: 5px; box-shadow: 0 15px 35px rgba(0,0,0,0.2);
         max-width: 800px; width: 90%; transform: rotate(-1deg);
         position: relative;
@@ -138,17 +140,17 @@
         width: 100%; border-radius: 4px; display: block; outline: none; background: #000;
     }
     .video-wrapper::after {
-        content: '🎬 我们的心里话'; position: absolute; bottom: 10px; left: 0; right: 0;
-        text-align: center; color: #d81b60; font-size: 18px; font-weight: bold;
+        content: '🎬 我们的心里话'; position: absolute; bottom: 8px; left: 0; right: 0;
+        text-align: center; color: #d81b60; font-size: 16px; font-weight: bold;
     }
 
-    /* === 🔥 提速后的高清照片灯箱 (极速弹出) 🔥 === */
+    /* === 极速高清照片灯箱 === */
     .lightbox {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background-color: rgba(0, 0, 0, 0.9); z-index: 10000;
         display: flex; justify-content: center; align-items: center;
         opacity: 0; pointer-events: none; 
-        transition: opacity 0.15s ease; /* 弹窗背景极速渐显 */
+        transition: opacity 0.15s ease;
     }
     .lightbox.active { opacity: 1; pointer-events: auto; }
     
@@ -158,45 +160,44 @@
     }
     .lightbox img {
         max-width: 100%; max-height: 85vh; object-fit: contain; 
-        border: 10px solid white; border-radius: 4px;
+        border: 8px solid white; border-radius: 4px;
         box-shadow: 0 0 40px rgba(0,0,0,0.8);
-        transform: scale(0.95); /* 取消了原来的小尺寸，直接从0.95弹到1，速度极快 */
-        transition: transform 0.15s ease-out; /* 极速弹出动画 */
+        transform: scale(0.9); transition: transform 0.15s ease-out;
     }
     .lightbox.active img { transform: scale(1); }
     
     .close-btn {
-        position: absolute; top: 20px; right: 30px; color: rgba(255,255,255,0.7);
-        font-size: 50px; cursor: pointer; transition: color 0.2s ease;
+        position: absolute; top: 10px; right: 20px; color: rgba(255,255,255,0.8);
+        font-size: 50px; cursor: pointer; transition: color 0.2s ease; padding: 10px;
     }
-    .close-btn:hover { color: white; }
+    .close-btn:active { color: white; transform: scale(0.9);}
 
-    /* 手机端适配 */
+    /* 手机端深度适配 */
     @media (max-width: 768px) {
-        .section { padding: 50px 15px; }
-        .glass-card { padding: 30px 20px; margin-bottom: 30px; }
-        .glass-card h1 { font-size: 26px; }
-        .glass-card h2 { font-size: 22px; }
-        .glass-card p { font-size: 16px; }
+        .section { padding: 40px 10px; }
+        .glass-card { padding: 25px 15px; margin-bottom: 25px; width: 95%;}
+        .glass-card h1 { font-size: 24px; letter-spacing: 1px;}
+        .glass-card h2 { font-size: 20px; }
+        .glass-card p { font-size: 16px; line-height: 1.6;}
+        /* 手机端照片改小，确保一行能排开或者看着舒服 */
         .polaroid img { width: 140px; height: 140px; }
         .photo-grid { gap: 15px; }
-        .lightbox img { border-width: 6px; }
+        .lightbox img { border-width: 4px; max-width: 95vw;}
     }
 </style>
 </head>
 <body>
-
-<!-- === 欢迎遮罩层 (解决音频自动播放拦截) === -->
+<!-- === 欢迎遮罩层 === -->
 <div id="startOverlay">
-    <div class="overlay-title">一份特别的礼物，等待查收</div>
+    <div class="overlay-title">一份特别的礼物<br>等待查收</div>
     <button class="open-btn" id="openBtn">点击开启</button>
 </div>
 
 <!-- 背景特效层 -->
 <div class="bg-effects"></div>
 
-<!-- 音乐播放器 -->
-<audio id="bgMusic" loop>
+<!-- 🔥 核心修复：添加 playsinline 和 preload 属性，专治安卓各种不服 🔥 -->
+<audio id="bgMusic" loop preload="auto" playsinline webkit-playsinline>
     <source src="bgm.mp3" type="audio/mpeg">
 </audio>
 <div id="musicToggle" class="music-btn" title="播放/暂停音乐">🔇</div>
@@ -215,8 +216,8 @@
         <h1>三八妇女节快乐！</h1>
         <p>时光荏苒，岁月静好。<br>谢谢您一直以来的包容与爱，<br>祝世界上最美丽的妈妈节日快乐！</p>
     </div>
-    <!-- 首屏主图 -->
-    <div class="polaroid tilt-right reveal" style="transition-delay: 0.2s;" onclick="openLightbox('399de03069df729f.jpg')">
+    <!-- 删除了 transition-delay，瞬间出现 -->
+    <div class="polaroid tilt-right reveal" onclick="openLightbox('399de03069df729f.jpg')">
         <img src="399de03069df729f.jpg" alt="最温暖的拥抱">
     </div>
     <div class="scroll-down">↓ 滑动翻阅相册 ↓</div>
@@ -232,13 +233,13 @@
         <div class="polaroid tilt-left reveal" onclick="openLightbox('IMG_20150428_180127.jpg')">
             <img src="IMG_20150428_180127.jpg" alt="一起看书">
         </div>
-        <div class="polaroid tilt-right reveal" style="transition-delay: 0.1s;" onclick="openLightbox('IMG_20150211_085608.jpg')">
+        <div class="polaroid tilt-right reveal" onclick="openLightbox('IMG_20150211_085608.jpg')">
             <img src="IMG_20150211_085608.jpg" alt="喂鸽子">
         </div>
-        <div class="polaroid tilt-left reveal" style="transition-delay: 0.2s;" onclick="openLightbox('IMG_1773.JPG')">
+        <div class="polaroid tilt-left reveal" onclick="openLightbox('IMG_1773.JPG')">
             <img src="IMG_1773.JPG" alt="陪伴">
         </div>
-        <div class="polaroid tilt-right reveal" style="transition-delay: 0.3s;" onclick="openLightbox('microMsg.1437566185753.jpg')">
+        <div class="polaroid tilt-right reveal" onclick="openLightbox('microMsg.1437566185753.jpg')">
             <img src="microMsg.1437566185753.jpg" alt="餐厅吃饭">
         </div>
     </div>
@@ -254,13 +255,13 @@
         <div class="polaroid tilt-right reveal" onclick="openLightbox('IMG_20160212_115520.jpg')">
             <img src="IMG_20160212_115520.jpg" alt="护士合影">
         </div>
-        <div class="polaroid tilt-left reveal" style="transition-delay: 0.1s;" onclick="openLightbox('microMsg.1423973894349.jpg')">
+        <div class="polaroid tilt-left reveal" onclick="openLightbox('microMsg.1423973894349.jpg')">
             <img src="microMsg.1423973894349.jpg" alt="三人合影">
         </div>
-        <div class="polaroid tilt-right reveal" style="transition-delay: 0.2s;" onclick="openLightbox('2015年春节摄影microMsg.1424489270003.jpg')">
+        <div class="polaroid tilt-right reveal" onclick="openLightbox('2015年春节摄影microMsg.1424489270003.jpg')">
             <img src="2015年春节摄影microMsg.1424489270003.jpg" alt="春节合影">
         </div>
-        <div class="polaroid tilt-left reveal" style="transition-delay: 0.3s;" onclick="openLightbox('IMG_1802.JPG')">
+        <div class="polaroid tilt-left reveal" onclick="openLightbox('IMG_1802.JPG')">
             <img src="IMG_1802.JPG" alt="合影">
         </div>
     </div>
@@ -276,10 +277,10 @@
         <div class="polaroid tilt-left reveal" onclick="openLightbox('IMG20150913085234.jpg')">
             <img src="IMG20150913085234.jpg" alt="自拍">
         </div>
-        <div class="polaroid tilt-right reveal" style="transition-delay: 0.1s;" onclick="openLightbox('microMsg.1414297649490.jpg')">
+        <div class="polaroid tilt-right reveal" onclick="openLightbox('microMsg.1414297649490.jpg')">
             <img src="microMsg.1414297649490.jpg" alt="沙滩生活照">
         </div>
-        <div class="polaroid tilt-left reveal" style="transition-delay: 0.2s;" onclick="openLightbox('DSC00075.JPG')">
+        <div class="polaroid tilt-left reveal" onclick="openLightbox('DSC00075.JPG')">
             <img src="DSC00075.JPG" alt="生活照">
         </div>
     </div>
@@ -292,41 +293,64 @@
         <p>千言万语，化作一句最真挚的祝福：<br>妈妈，我们永远爱您！</p>
     </div>
     <!-- 视频播放容器 -->
-    <div class="video-wrapper reveal" style="transition-delay: 0.2s;">
-        <!-- controls允许控制进度音量，preload加载元数据 -->
-        <video src="e1baf6f8cab8a96c43844d8375f4ef26.mp4" controls preload="metadata"></video>
+    <div class="video-wrapper reveal">
+        <video src="e1baf6f8cab8a96c43844d8375f4ef26.mp4" controls preload="metadata" playsinline webkit-playsinline></video>
     </div>
 </div>
 
 <script>
-    // === 1. 欢迎界面与音乐播放联动 ===
+    // === 1. 终极兼容安卓/微信的音乐引擎 ===
     const overlay = document.getElementById('startOverlay');
     const openBtn = document.getElementById('openBtn');
     const musicToggle = document.getElementById('musicToggle');
     const bgMusic = document.getElementById('bgMusic');
     let isPlaying = false;
+    let audioInitialized = false;
 
-    // 用户点击“点击开启”
-    openBtn.addEventListener('click', () => {
-        // 1. 播放音乐 (浏览器允许用户点击后播放)
+    // 封装一个强大的启动音乐函数
+    function startExperience(e) {
+        if(e) e.preventDefault(); // 防止穿透点击
+        
+        // 强制在用户交互的第一时间 load 音频（安卓破局核心）
+        if (!audioInitialized) {
+            bgMusic.load();
+            audioInitialized = true;
+        }
+
+        let playPromise = bgMusic.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                isPlaying = true;
+                musicToggle.classList.add('playing');
+                musicToggle.innerHTML = '🎵';
+            }).catch(err => console.log("Audio Error:", err));
+        }
+
+        // 隐藏遮罩层，提速到0.4秒
+        overlay.style.opacity = '0';
+        overlay.style.transform = 'scale(1.1)'; 
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            revealOnScroll(); // 触发动画
+        }, 400);
+    }
+
+    // 绑定了 click 和 touchstart（专门针对安卓原生触摸）
+    openBtn.addEventListener('click', startExperience);
+    openBtn.addEventListener('touchstart', startExperience, {passive: false});
+
+    // 微信专属自动播放破解 (如果阿姨在微信里打开，极大可能直接响)
+    document.addEventListener("WeixinJSBridgeReady", function () {
         bgMusic.play().then(() => {
             isPlaying = true;
             musicToggle.classList.add('playing');
             musicToggle.innerHTML = '🎵';
-        }).catch(err => console.log("播放失败", err));
-
-        // 2. 隐藏遮罩层
-        overlay.style.opacity = '0';
-        overlay.style.transform = 'scale(1.1)'; // 放大消散特效
-        setTimeout(() => {
-            overlay.style.display = 'none';
-            // 3. 遮罩消失后，触发首屏元素的入场动画
-            revealOnScroll(); 
-        }, 800);
-    });
+        });
+    }, false);
 
     // 右上角音乐按钮的手动控制
-    musicToggle.addEventListener('click', () => {
+    function toggleMusic(e) {
+        if(e) e.preventDefault();
         if (isPlaying) {
             bgMusic.pause();
             musicToggle.classList.remove('playing');
@@ -337,9 +361,11 @@
             musicToggle.innerHTML = '🎵';
         }
         isPlaying = !isPlaying;
-    });
+    }
+    musicToggle.addEventListener('click', toggleMusic);
+    musicToggle.addEventListener('touchstart', toggleMusic, {passive: false});
 
-    // 监听视频播放，当视频播放时自动暂停背景音乐
+    // 监听视频播放，暂停音乐
     const myVideo = document.querySelector('video');
     myVideo.addEventListener('play', () => {
         if(isPlaying){
@@ -350,7 +376,7 @@
         }
     });
 
-    // === 2. 极速高清灯箱 (Lightbox) 逻辑 ===
+    // === 2. 极速高清灯箱 ===
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightboxImg');
     const closeBtn = document.getElementById('closeBtn');
@@ -361,23 +387,25 @@
         document.body.style.overflow = 'hidden'; 
     }
 
-    function closeLightbox() {
+    function closeLightbox(e) {
+        if(e) e.preventDefault();
         lightbox.classList.remove('active');
         document.body.style.overflow = ''; 
-        // 缩短清空图片的延迟时间
         setTimeout(() => { lightboxImg.src = ''; }, 150); 
     }
 
     closeBtn.addEventListener('click', closeLightbox);
+    closeBtn.addEventListener('touchstart', closeLightbox, {passive: false});
+    
     lightbox.addEventListener('click', (e) => {
         if (e.target !== lightboxImg) { closeLightbox(); }
     });
 
-    // === 3. 滚动浮现动画逻辑 ===
+    // === 3. 极速滚动浮现动画 ===
     function revealOnScroll() {
         const reveals = document.querySelectorAll('.reveal');
         const windowHeight = window.innerHeight;
-        const elementVisible = 80; 
+        const elementVisible = 50; // 降低触发门槛，一露头就显示
 
         reveals.forEach((reveal) => {
             const elementTop = reveal.getBoundingClientRect().top;
@@ -387,7 +415,6 @@
         });
     }
     
-    // 监听滚动
     window.addEventListener('scroll', revealOnScroll);
 </script>
 </body>
